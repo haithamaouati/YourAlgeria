@@ -3,16 +3,16 @@ The meaning is yours.
 
 [https://haithamaouati.github.io/YourAlgeria/](https://haithamaouati.github.io/YourAlgeria/)
 
-**Your Algeria** – Interactive Map & Story Builder
+> [!NOTE]  
+> **How to use:** Select a region on the map or from the dropdown. Write a short story related to it. Copy the link to share your story.
 
-Discover Algeria like never before. Click any wilaya (region) or select it from the dropdown to explore its name and code. Add your own short story or personal note for that region, and instantly generate a shareable link containing both the selected region and your story.
+## Star History
 
-### Features include:
-- **Interactive SVG map** with zoom, reset, and region focus.
-- **Customizable selection color** for highlighting regions.
-- **Dynamic tooltip** showing region code and name.
-- **Story input** tied to each region, stored in the shareable link.
-- **Instant sharing:** Copy or share your link; recipients see your selected region and story immediately.
-- **Client-side only:** No backend required; all data is encoded in the URL and persists across page loads.
+[![Star History Chart](https://api.star-history.com/svg?repos=haithamaouati/YourAlgeria&type=date&legend=top-left)](https://www.star-history.com/#haithamaouati/YourAlgeria&type=date&legend=top-left)
 
-Perfect for mapping your favorite places, writing personal reflections, or sharing Algeria experiences with friends. Fully responsive for mobile and desktop.
+#### Find this repository useful? ♥️
+Support it by joining the [stargazers](https://github.com/haithamaouati/YourAlgeria/stargazers). ⭐
+
+If you want to help even more, please spread the word — share the project on X, Reddit, or with your community so more people discover it.
+
+And [follow me](https://github.com/haithamaouati) to keep up with future updates and projects. 🤩
