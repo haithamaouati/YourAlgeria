@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Your Algeria</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h2>Your Algeria</h2>
+</header>
+
+<main>
+  <!-- Notes Card -->
+  <div class="card notes-card">
+    <p><strong>How to use:</strong> Click a wilaya or select it from the dropdown to highlight it. Write a short story below. Copy the link to share — selection and story will be preserved.</p>
+  </div>
+
+  <!-- Controls Card -->
+  <div class="card controls-card">
+    <select id="regionDropdown">
+      <option value="">Select a Wilaya</option>
+    </select>
+
+    <input type="text" id="shareLink" placeholder="Share link will appear here" readonly>
+
+    <button id="copyLink">Copy</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+
+  <!-- Story TextArea -->
+  <textarea id="storyInput" placeholder="Write your story for the selected region..." rows="3"></textarea>
+
+  <!-- Map Container -->
+  <div class="card map-card" id="map-container"></div>
+</main>
+
+<footer>
+  Developed by <a href="https://github.com/haithamaouati" target="_blank">Haitham Aouati</a>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
