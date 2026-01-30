@@ -1,11 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
+:root {
+  --bg: #121212;
+  --surface: #1e1e1e;
+  --surface-soft: #1a1a1a;
+  --border: #333;
+  --text: #e0e0e0;
+  --muted: #aaa;
+  --accent: #00ff00;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 1rem;
-  background-color: #121212;
-  color: #e0e0e0;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
 
 h2 {
@@ -14,23 +28,17 @@ h2 {
 }
 
 .card {
-  background-color: #1e1e1e;
-  padding: 1rem;
+  background: var(--surface);
   border-radius: 12px;
+  padding: 1rem;
   margin-bottom: 1rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.7);
 }
 
 .notes-card p {
   margin: 0;
   font-size: 0.95rem;
-  color: #ccc;
+  color: var(--muted);
 }
 
 .controls-card {
@@ -41,56 +49,52 @@ h2 {
 }
 
 .controls-card select,
-.controls-card input[type=text] {
-  padding: 0.5rem 0.6rem;
-  border-radius: 8px;
-  border: 1px solid #333;
-  background-color: #222;
-  color: #fff;
+.controls-card input {
   flex: 1;
   min-width: 150px;
+  padding: 0.55rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #222;
+  color: var(--text);
 }
 
 .controls-card button {
-  padding: 0.5rem 1rem;
+  padding: 0.55rem 1rem;
   border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
   border: 2px solid #222;
-  background-color: #1e1e1e;
-  color: #e0e0e0;
-  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.controls-card button:hover {
-  border-color: #00ff00;
-}
-
+.controls-card button:hover,
 .controls-card button:active {
-  border-color: #00ff00;
-  box-shadow: 0 0 8px #00ff00;
+  border-color: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
 }
 
 #storyInput {
   width: 100%;
   padding: 0.6rem;
   border-radius: 10px;
-  border: 1px solid #333;
-  background-color: #222;
-  color: #fff;
+  border: 1px solid var(--border);
+  background: #222;
+  color: var(--text);
   resize: vertical;
-  font-size: 0.95rem;
   margin-bottom: 1rem;
+}
+
+.map-card {
+  padding: 0.5rem;
 }
 
 #map-container {
   overflow: auto;
-  border: 1px solid #333;
-  background-color: #1a1a1a;
-  border-radius: 12px;
-  padding: 0.5rem;
-  display: inline-block;
-  max-width: 100%;
+  background: var(--surface-soft);
+  border-radius: 10px;
+  border: 1px solid var(--border);
 }
 
 #map-container svg {
@@ -112,20 +116,32 @@ path:hover {
 }
 
 path.selected {
-  stroke: #00ff00;
+  stroke: var(--accent);
   stroke-width: 2.5;
+}
+
+/* Grid lines */
+.grid line {
+  stroke: #2a2a2a;
+  stroke-width: 0.5;
+}
+
+.region-info {
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--muted);
 }
 
 footer {
   margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid #333;
-  font-size: 0.85rem;
   text-align: center;
+  font-size: 0.85rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
 }
 
 footer a {
-  color: #00ff00;
+  color: var(--accent);
   text-decoration: none;
 }
 
@@ -136,8 +152,5 @@ footer a:hover {
 @media (max-width: 600px) {
   .controls-card {
     flex-direction: column;
-  }
-  #map-container svg {
-    width: 100%;
   }
 }
