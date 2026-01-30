@@ -43,6 +43,8 @@ function initMap() {
   resetBtn.onclick = resetAll;
   zoomOutBtn.onclick = zoomOut;
   storyInput.oninput = updateLink;
+
+  loadFromHash();
 }
 
 function addGrid() {
@@ -116,10 +118,12 @@ function zoomOut() {
 
 function updateLink() {
   if (!activeRegion) return;
-  const story = btoa(encodeURIComponent(storyInput.value));
-  shareLink.value =
-    location.origin + location.pathname +
-    `#${activeRegion.id}:${story}`;
+  try {
+    const story = btoa(unescape(encodeURIComponent(storyInput.value)));
+    shareLink.value = `${location.origin}${location.pathname}#${activeRegion.id}:${story}`;
+  } catch {
+    shareLink.value = "";
+  }
 }
 
 function copyLink() {
@@ -127,7 +131,7 @@ function copyLink() {
   shareLink.select();
   document.execCommand("copy");
   copyBtn.textContent = "Copied";
-  setTimeout(() => copyBtn.textContent = "Copy", 1200);
+  setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
 }
 
 function resetAll() {
@@ -138,4 +142,111 @@ function resetAll() {
   shareLink.value = "";
   regionInfo.textContent = "No region selected";
   zoomOut();
+  history.replaceState(null, "", location.pathname);
 }
+
+function loadFromHash() {
+  if (!location.hash) return;
+
+  const hash = location.hash.slice(1);
+  const colonIndex = hash.indexOf(":");
+  if (colonIndex === -1) return;
+
+  const regionId = hash.slice(0, colonIndex);
+  const encodedStory = hash.slice(colonIndex + 1);
+
+  const region = regions.find(r => r.id === regionId);
+  if (!region) return;
+
+  selectRegion(region);
+
+  try {
+    storyInput.value = decodeURIComponent(escape(atob(encodedStory)));
+  } catch {
+    storyInput.value = "";
+  }
+}
+
+/* Particle background */
+const canvas = document.getElementById("particle-bg");
+const ctx = canvas.getContext("2d");
+
+let w, h;
+let particles = [];
+const PARTICLE_COUNT = 80;
+const COLOR = "#00ff00";
+
+function resize() {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
+
+class Particle {
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.x = Math.random() * w;
+    this.y = Math.random() * h;
+    this.vx = (Math.random() - 0.5) * 0.3;
+    this.vy = (Math.random() - 0.5) * 0.3;
+    this.size = Math.random() * 1.5 + 0.5;
+    this.alpha = Math.random() * 0.5 + 0.2;
+  }
+
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+
+    if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) {
+      this.reset();
+    }
+  }
+
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0, 255, 0, ${this.alpha})`;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+  particles.push(new Particle());
+}
+
+function connect() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist < 120) {
+        ctx.strokeStyle = `rgba(0, 255, 0, ${1 - dist / 120})`;
+        ctx.lineWidth = 0.3;
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate() {
+  ctx.clearRect(0, 0, w, h);
+
+  particles.forEach(p => {
+    p.update();
+    p.draw();
+  });
+
+  connect();
+  requestAnimationFrame(animate);
+}
+
+animate();
