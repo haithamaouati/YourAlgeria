@@ -2,9 +2,9 @@
 
 :root {
   --bg: #121212;
-  --surface: #1e1e1e;
-  --surface-soft: #1a1a1a;
-  --border: #333;
+  --surface: rgba(30, 30, 30, 0.6);       /* semi-transparent cards */
+  --surface-soft: rgba(26, 26, 26, 0.5);  /* map container background */
+  --border: rgba(51, 51, 51, 0.5);
   --text: #e0e0e0;
   --muted: #aaa;
   --accent: #00ff00;
@@ -22,17 +22,29 @@ body {
   color: var(--text);
 }
 
+#particle-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: #121212;
+}
+
 h2 {
   margin-bottom: 1rem;
   font-weight: 600;
 }
 
+/* All cards: note card, controls card, map card, region info */
 .card {
   background: var(--surface);
   border-radius: 12px;
   padding: 1rem;
   margin-bottom: 1rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);  /* soft blur for readability */
 }
 
 .notes-card p {
@@ -55,7 +67,7 @@ h2 {
   padding: 0.55rem 0.6rem;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: #222;
+  background: rgba(34, 34, 34, 0.6);  /* transparent inputs */
   color: var(--text);
 }
 
@@ -80,7 +92,7 @@ h2 {
   padding: 0.6rem;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: #222;
+  background: rgba(34, 34, 34, 0.6);   /* transparent textarea */
   color: var(--text);
   resize: vertical;
   margin-bottom: 1rem;
@@ -88,11 +100,12 @@ h2 {
 
 .map-card {
   padding: 0.5rem;
+  background: var(--surface);  /* semi-transparent */
 }
 
 #map-container {
   overflow: auto;
-  background: var(--surface-soft);
+  background: var(--surface-soft);  /* semi-transparent map background */
   border-radius: 10px;
   border: 1px solid var(--border);
 }
@@ -130,6 +143,9 @@ path.selected {
   text-align: center;
   font-size: 0.95rem;
   color: var(--muted);
+  background: var(--surface);         /* semi-transparent */
+  border-radius: 10px;
+  padding: 0.5rem;
 }
 
 footer {
