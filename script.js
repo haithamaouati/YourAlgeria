@@ -1,12 +1,14 @@
 const mapContainer = document.getElementById("map-container");
-const regionDropdown = document.getElementById("regionDropdown");
-const shareLinkInput = document.getElementById("shareLink");
+const dropdown = document.getElementById("regionDropdown");
+const shareLink = document.getElementById("shareLink");
+const storyInput = document.getElementById("storyInput");
+const regionInfo = document.getElementById("regionInfo");
+
 const copyBtn = document.getElementById("copyLink");
 const resetBtn = document.getElementById("resetBtn");
-const storyInput = document.getElementById("storyInput");
+const zoomOutBtn = document.getElementById("zoomOutBtn");
 
-let svg, regions;
-let originalViewBox;
+let svg, regions, originalViewBox;
 let activeRegion = null;
 
 fetch("dz.svg")
@@ -18,113 +20,122 @@ fetch("dz.svg")
 
 function initMap() {
   svg = mapContainer.querySelector("svg");
-  regions = [...svg.querySelectorAll("path")];
   originalViewBox = svg.getAttribute("viewBox").split(" ").map(Number);
 
-  populateDropdown();
-  bindInteractions();
+  addGrid();
+  regions = [...svg.querySelectorAll("path")];
 
-  if (window.location.hash) restoreFromHash();
-}
-
-function populateDropdown() {
   regions.forEach(r => {
-    const option = document.createElement("option");
-    option.value = r.id;
-    option.textContent = `${r.id} — ${r.getAttribute("name")}`;
-    regionDropdown.appendChild(option);
+    const opt = document.createElement("option");
+    opt.value = r.id;
+    opt.textContent = `${r.id} — ${r.getAttribute("name")}`;
+    dropdown.appendChild(opt);
+
+    r.addEventListener("click", () => selectRegion(r));
   });
 
-  regionDropdown.onchange = () => {
-    const selected = regions.find(r => r.id === regionDropdown.value);
-    if (selected) selectRegion(selected);
+  dropdown.onchange = () => {
+    const region = regions.find(r => r.id === dropdown.value);
+    if (region) selectRegion(region);
   };
+
+  copyBtn.onclick = copyLink;
+  resetBtn.onclick = resetAll;
+  zoomOutBtn.onclick = zoomOut;
+  storyInput.oninput = updateLink;
 }
 
-function updateShareLink() {
-  if (!activeRegion) {
-    shareLinkInput.value = '';
-    return;
-  }
-  const storyEncoded = btoa(encodeURIComponent(storyInput.value));
-  shareLinkInput.value = `${window.location.href.split('#')[0]}#${activeRegion.id}:${storyEncoded}`;
-}
+function addGrid() {
+  const grid = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  grid.classList.add("grid");
 
-function animateViewBox(start, end, duration = 500, easing = t => t*t*(3-2*t)) {
-  let startTime = null;
-  function animate(timestamp) {
-    if (!startTime) startTime = timestamp;
-    let t = Math.min((timestamp - startTime) / duration, 1);
-    t = easing(t);
-    const current = start.map((s, i) => s + (end[i] - s) * t);
-    svg.setAttribute("viewBox", current.join(" "));
-    if (t < 1) requestAnimationFrame(animate);
+  const step = 50;
+  const [x, y, w, h] = originalViewBox;
+
+  for (let i = x; i < x + w; i += step) {
+    const line = document.createElementNS(svg.namespaceURI, "line");
+    line.setAttribute("x1", i);
+    line.setAttribute("y1", y);
+    line.setAttribute("x2", i);
+    line.setAttribute("y2", y + h);
+    grid.appendChild(line);
   }
-  requestAnimationFrame(animate);
+
+  for (let i = y; i < y + h; i += step) {
+    const line = document.createElementNS(svg.namespaceURI, "line");
+    line.setAttribute("x1", x);
+    line.setAttribute("y1", i);
+    line.setAttribute("x2", x + w);
+    line.setAttribute("y2", i);
+    grid.appendChild(line);
+  }
+
+  svg.insertBefore(grid, svg.firstChild);
 }
 
 function selectRegion(region) {
-  if (activeRegion === region) return;
-
   activeRegion?.classList.remove("selected");
   activeRegion = region;
   region.classList.add("selected");
-  regionDropdown.value = region.id;
+  dropdown.value = region.id;
 
-  // Zoom to selected region
-  const b = region.getBBox();
+  const box = region.getBBox();
   const padding = 30;
-  const width = b.width + padding;
-  const height = b.height + padding;
-  const centerX = b.x + b.width / 2 - width / 2;
-  const centerY = b.y + b.height / 2 - height / 2;
-  const targetViewBox = [centerX, centerY, width, height];
+  animateViewBox([
+    box.x - padding,
+    box.y - padding,
+    box.width + padding * 2,
+    box.height + padding * 2
+  ]);
 
-  const currentViewBox = svg.getAttribute("viewBox").split(" ").map(Number);
-  animateViewBox(currentViewBox, targetViewBox);
-
-  updateShareLink();
+  regionInfo.textContent = `${region.id} — ${region.getAttribute("name")}`;
+  updateLink();
 }
 
-function resetMap() {
+function animateViewBox(target) {
+  const start = svg.getAttribute("viewBox").split(" ").map(Number);
+  let t = 0;
+
+  function frame() {
+    t += 0.04;
+    if (t > 1) t = 1;
+
+    const eased = t * t * (3 - 2 * t);
+    const current = start.map((s, i) => s + (target[i] - s) * eased);
+    svg.setAttribute("viewBox", current.join(" "));
+
+    if (t < 1) requestAnimationFrame(frame);
+  }
+
+  requestAnimationFrame(frame);
+}
+
+function zoomOut() {
+  animateViewBox(originalViewBox);
+}
+
+function updateLink() {
+  if (!activeRegion) return;
+  const story = btoa(encodeURIComponent(storyInput.value));
+  shareLink.value =
+    location.origin + location.pathname +
+    `#${activeRegion.id}:${story}`;
+}
+
+function copyLink() {
+  if (!shareLink.value) return;
+  shareLink.select();
+  document.execCommand("copy");
+  copyBtn.textContent = "Copied";
+  setTimeout(() => copyBtn.textContent = "Copy", 1200);
+}
+
+function resetAll() {
   activeRegion?.classList.remove("selected");
   activeRegion = null;
-  regionDropdown.value = "";
+  dropdown.value = "";
   storyInput.value = "";
-  shareLinkInput.value = '';
-
-  const currentViewBox = svg.getAttribute("viewBox").split(" ").map(Number);
-  animateViewBox(currentViewBox, originalViewBox);
-}
-
-function bindInteractions() {
-  regions.forEach(r =>
-    r.addEventListener("click", e => {
-      e.stopPropagation();
-      selectRegion(r);
-    })
-  );
-
-  copyBtn.onclick = () => {
-    if (shareLinkInput.value) {
-      shareLinkInput.select();
-      document.execCommand('copy');
-      copyBtn.textContent = "Copied!";
-      setTimeout(() => copyBtn.textContent = "Copy", 1500);
-    }
-  };
-
-  resetBtn.onclick = resetMap;
-  storyInput.oninput = updateShareLink;
-}
-
-function restoreFromHash() {
-  const hash = window.location.hash.slice(1);
-  const [regionId, storyEncoded] = hash.split(":");
-  const region = regions.find(r => r.id === regionId);
-  if (region) {
-    selectRegion(region);
-    if (storyEncoded) storyInput.value = decodeURIComponent(atob(storyEncoded));
-    updateShareLink();
-  }
+  shareLink.value = "";
+  regionInfo.textContent = "No region selected";
+  zoomOut();
 }
