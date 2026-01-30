@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Your Algeria</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Your Algeria</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
@@ -13,32 +13,47 @@
 </header>
 
 <main>
-  <!-- Notes Card -->
   <div class="card notes-card">
-    <p><strong>How to use:</strong> Click a wilaya or select it from the dropdown to highlight it. Write a short story below. Copy the link to share — selection and story will be preserved.</p>
+    <p>
+      <strong>How to use:</strong>
+      Select a region on the map or from the dropdown.  
+      Write a short story related to it.  
+      Copy the link to share your story.
+    </p>
   </div>
 
-  <!-- Controls Card -->
   <div class="card controls-card">
     <select id="regionDropdown">
       <option value="">Select a Wilaya</option>
     </select>
 
-    <input type="text" id="shareLink" placeholder="Share link will appear here" readonly>
+    <input type="text" id="shareLink" placeholder="Share link" readonly />
 
     <button id="copyLink">Copy</button>
+    <button id="zoomOutBtn">Zoom Out</button>
     <button id="resetBtn">Reset</button>
   </div>
 
-  <!-- Story TextArea -->
-  <textarea id="storyInput" placeholder="Write your story for the selected region..." rows="3"></textarea>
+  <textarea
+    id="storyInput"
+    rows="3"
+    placeholder="Write your story for this region..."
+  ></textarea>
 
-  <!-- Map Container -->
-  <div class="card map-card" id="map-container"></div>
+  <div class="card map-card">
+    <div id="map-container"></div>
+  </div>
+
+  <div class="card region-info" id="regionInfo">
+    <span>No region selected</span>
+  </div>
 </main>
 
 <footer>
-  Developed by <a href="https://github.com/haithamaouati" target="_blank">Haitham Aouati</a>
+  Developed by
+  <a href="https://github.com/haithamaouati" target="_blank">
+    Haitham Aouati
+  </a>
 </footer>
 
 <script src="script.js"></script>
